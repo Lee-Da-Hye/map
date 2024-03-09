@@ -1,45 +1,87 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>location</title>
-  <style>
-    #map{
-      height: 300px;
-    }
-    /* 
-    37.5665851
-    126.9782038 
-    38.17601
-    128.5194615
-    33.3846216
-    126.5534925
-    */
-  </style>
+    <meta charset="utf-8">
+    <title>미세먼지 위치기반 서비스</title>
+    <!-- Kakao 지도 API 라이브러리 -->
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=28716c652e451405e8ddac7e8631cf21"></script>
+    <script type="text/javascript">
+        // Kakao 지도 API 초기화
+        kakao.maps.load(function () {
+            // 현재 위치 가져오기
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var lat = position.coords.latitude, // 위도
+                    lon = position.coords.longitude; // 경도
+
+                var locPosition = new kakao.maps.LatLng(lat, lon); // 현재 위치
+
+                // 지도 생성
+                var mapContainer = document.getElementById('map');
+                var mapOption = {
+                    center: locPosition,
+                    level: 10
+                };
+                var map = new kakao.maps.Map(mapContainer, mapOption);
+
+                // 현재 위치 마커 생성
+                var marker = new kakao.maps.Marker({
+                    map: map,
+                    position: locPosition
+                });
+
+                // AJAX를 이용하여 대기오염정보 조회 서비스 API 호출
+                var apiUrl = 'http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty';
+                var serviceKey = 'LukiVznMrRVfgr%2FmME%2Flropqo%2Fn39Hq74bNK9gZh1%2B8oW%2BLAi70wMvDqzgXK3cAyZzlWSKjieh68kBnwM8TQoQ%3D%3D'; // 본인의 서비스 키로 변경
+                var stationName = '종로구'; // 측정소 이름 설정 (예시)
+                var dataType = 'json'; // 응답 데이터 타입 설정
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', apiUrl + '?ServiceKey=' + serviceKey + '&stationName=' + stationName + '&dataTerm=month&numOfRows=1&pageNo=1&ver=1.0&_returnType=' + dataType);
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                            var response = JSON.parse(xhr.responseText);
+                            
+                            // API 응답 데이터에서 미세먼지 농도 값을 추출
+                            var dustLevel = null; // 미세먼지 농도 값 초기화
+
+                            // API 응답 데이터의 배열을 순회하면서 미세먼지 농도 값을 추출
+                            for (var i = 0; i < response.list.length; i++) {
+                                var item = response.list[i];
+
+                                // 'pm10Value' 필드가 존재하는지 확인하여 미세먼지 농도 값을 추출
+                                if (item.hasOwnProperty('pm10Value')) {
+                                    dustLevel = item.pm10Value; // 미세먼지 농도 값 저장
+                                    break; // 값을 찾았으므로 반복문 종료
+                                }
+                            }
+
+                            if (dustLevel !== null) {
+                                // 미세먼지 농도 값이 존재할 경우 처리
+                                var iwContent = '현재 위치 미세먼지 농도: ' + dustLevel + 'μg/m³';
+                                var infowindow = new kakao.maps.InfoWindow({
+                                    content: iwContent,
+                                    removable: true
+                                });
+
+                                // 인포윈도우를 마커위에 표시
+                                infowindow.open(map, marker);
+                            } else {
+                                // 미세먼지 농도 값이 존재하지 않을 경우 처리
+                                console.error('미세먼지 정보를 찾을 수 없습니다.');
+                            }
+                        } else {
+                            console.error('API 요청에 실패했습니다.');
+                        }
+                    }
+                };
+                xhr.send();
+            });
+        });
+    </script>
 </head>
 <body>
-  <h1>Location</h1>
-  <ul class="menu">
-    <li><a href="#" data-lat="37.5665851" data-lng="126.9782038">서울지점</a></li>
-    <li><a href="#" data-lat="38.2073706" data-lng="128.5194615">속초지점</a></li>
-    <li><a href="#" data-lat="33.3846216" data-lng="126.5534925">제주지점</a></li>
-    <div id="map"></div>
-  </ul>
-
-  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=28716c652e451405e8ddac7e8631cf21"></script>
-  <script src="index.js"></script>
-  <script>
-    const mapMenu = document.querySelectorAll('.menu a');
-    for(let mm of mapMenu){
-      mm.addEventListener('click', (e)=>{
-        e.preventDefault();
-        let msg = e.target.innerHTML;
-        let lat = e.target.getAttribute('data-lat');
-        let lng = e.target.getAttribute('data-lng');
-        makeMap(msg, 'map', lat, lng);
-      })
-    }
-  </script>
+    <!-- 지도를 표시할 div -->
+    <div id="map" style="width:100%;height:400px;"></div>
 </body>
 </html>
