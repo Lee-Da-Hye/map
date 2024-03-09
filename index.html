@@ -13,14 +13,17 @@
 </head>
 <body>
   <h1>다음 지도</h1>
-  <!-- 28716c652e451405e8ddac7e8631cf21 -->
+  <!-- 28716c652e451405e8ddac7e8631cf21
+  위도: 37.622987
+  경도: 127.0753135
+  -->
   <div id="map"></div>
   <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=28716c652e451405e8ddac7e8631cf21"></script>
   <script>
     var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
         mapOption = { 
-            center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-            level: 3 // 지도의 확대 레벨
+            center: new kakao.maps.LatLng(37.622987, 127.0753135), // 지도의 중심좌표
+            level: 6 // 지도의 확대 레벨
         };
 
     // 지도를 표시할 div와  지도 옵션으로  지도를 생성합니다
