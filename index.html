@@ -18,6 +18,8 @@
   경도: 127.0753135
   -->
   <div id="map"></div>
+  <button onclick="setZoomable(false)">지도 확대/축소 끄기</button>
+  <button onclick="setZoomable(true)">지도 확대/축소 켜기</button>
   <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=28716c652e451405e8ddac7e8631cf21"></script>
   <script>
     var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
