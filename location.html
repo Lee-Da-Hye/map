@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>인포윈도우 생성하기</title>
+  <style>
+    .map{
+      width: 100%;
+      height: 350px;
+    }
+  </style>
+</head>
+<body>
+  <h1>다음 지도</h1>
+  <!-- 28716c652e451405e8ddac7e8631cf21
+  위도: 37.622987
+  경도: 127.0753135
+  -->
+  <div id="map1" class="map"></div>
+  <div id="map2" class="map"></div>
+  <button id="nozoom">지도 확대/축소 끄기</button>
+  <button id="zoomok">지도 확대/축소 켜기</button>
+  
+  
+  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=28716c652e451405e8ddac7e8631cf21"></script>
+  <script src="index.js"></script>
+  <script>
+    makeMap('페이스 스카', 'map1', 37.622987, 127.0753135);
+    makeMap('다음 카카오', 'map2', 33.450701, 126.570667);
+  </script>
+  <script src="index.js"></script>
+</body>
+</html>
